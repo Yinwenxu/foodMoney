@@ -109,7 +109,6 @@
         onSubmit(formName) {
           console.log(formName)
           let that = this;
-          // this.$nextTick(() => {
           this.$refs[formName].validate((valid) => {
             if (valid) {
               console.log(that.ruleForm);
@@ -128,7 +127,6 @@
               return false;
             }
           })
-          // })
          
         },
         open2() {
