@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>干湿转换</title>
+  <!-- Import style -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <!-- Import Vue 2 -->
+  <script src="http://unpkg.com/vue@2"></script>
+  <!-- Import component library -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <template>
+      <h2>粮食干湿计算器</h2>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" size="mini" label-position="left">
+        <el-form-item label="湿水分" prop="wet">
+          <el-input-number v-model.number="ruleForm.wet" controls-position="right" :min="10" :max="40" :precision="2"
+            :step="1">
+          </el-input-number>
+        </el-form-item>
+        <el-form-item label="干水分" prop="dry">
+          <el-input-number v-model.number="ruleForm.dry" controls-position="right" :min="10" :max="40" :precision="2"
+            :step="1">
+          </el-input-number>
+        </el-form-item>
+        <el-form-item label="一个水舍去多少粮食按照100斤算" prop="loseDry">
+          <el-select v-model="ruleForm.loseDry" placeholder="请选择">
+            <el-option v-for="item,index in options" :key="index" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="干玉米价钱" label-position="left" prop="dryMoney">
+          <el-input-number v-model.number="ruleForm.dryMoney" controls-position="right" :min="1" :max="2" :precision="2"
+            :step="0.01">
+          </el-input-number>
+        </el-form-item>
+
+        <el-form-item size="large">
+          <el-button type="primary" @click="onSubmit('ruleForm')">开始计算</el-button>
+        </el-form-item>
+      </el-form>
+      <p>湿玉米价钱应为：<span style="color:#67C23A">{{ruleForm.wetMoney}}</span>￥</p>
+      <p>不保留小数:<span style="color:#67C23A">{{ruleForm.wetMoney2}}</span>￥</p>
+    </template>
+  </div>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        message: 'Hello Vue!',
+        ruleForm: {
+          wet: '30', //湿 水分
+          dry: '14', //干 水分
+          dryMoney: '1.28', //干玉米 元/斤
+          loseDry: "1.3", //一个水舍去多少粮食按照100斤算 一般按照1.325
+          wetMoney: "--", //换算为湿玉米价钱 保留两位小数
+          wetMoney2: "--", //换算为湿玉米价钱 原价
+          // lostWeight: "", //晒干 丢掉的重量
+        },
+        options: [{
+            label: "1.3斤",
+            value: "1.3",
+          }, {
+            label: "1.325斤",
+            value: "1.325"
+          },
+          {
+            label: "1.4斤",
+            value: "1.4"
+          }
+        ],
+        rules: {
+          dry: [{
+            required: true,
+            message: '请输入晒干后的水分',
+            trigger: 'blur'
+          }],
+          wet: [{
+            required: true,
+            message: '请输入湿玉米的水分',
+            trigger: 'blur'
+          }],
+          loseDry: [{
+            required: true,
+            message: '请选择一个水晒掉多少粮食',
+            trigger: 'blur'
+          }],
+          dryMoney: [{
+            required: true,
+            message: '请输入干玉米的价钱',
+            trigger: 'blur'
+          }]
+
+        }
+      },
+      methods: {
+        onSubmit(formName) {
+          console.log(formName)
+          let that = this;
+          // this.$nextTick(() => {
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              console.log(that.ruleForm);
+              let waterContent = Number(that.ruleForm.wet) - Number(that.ruleForm.dry);
+              let lostWeight = 100 - (waterContent * that.ruleForm.loseDry); //100斤玉米 晒干 丢掉的重量
+              let wetMoney = lostWeight * that.ruleForm.dryMoney / 100;
+              that.ruleForm.wetMoney2 = wetMoney.toFixed(10);
+              that.ruleForm.wetMoney = wetMoney.toFixed(2);
+              that.open2();
+            } else {
+              this.$message({
+                showClose: true,
+                message: `请填写完整`,
+                type: 'error'
+              });
+              return false;
+            }
+          })
+          // })
+         
+        },
+        open2() {
+            this.$message({
+              showClose: true,
+              message: `湿玉米价钱应为：${this.ruleForm.wetMoney}`,
+              type: 'success'
+            });
+          }
+      },
+
+    })
+  </script>
+
+</body>
+
+</html>
