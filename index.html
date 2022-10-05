@@ -24,7 +24,7 @@
   <div id="app">
     <template>
       <h2>粮食干湿计算器</h2>
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" size="mini" label-position="left">
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" size="" label-position="left">
         <el-form-item label="湿水分" prop="wet">
           <el-input-number v-model.number="ruleForm.wet" controls-position="right" :min="10" :max="40" :precision="2"
             :step="1">
